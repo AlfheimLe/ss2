@@ -35,8 +35,8 @@ def get_data(file_name):
 def main():
     args = process_args()
 
-    dataloader = get_dataloader(num_training=1000,num_labeled=400,
-                                batch_size=100, y_dim=args.y_dim,
+    dataloader = get_dataloader(num_training=args.train_num,num_labeled=args.n_labeled,
+                                batch_size=args.batch_size, y_dim=args.y_dim,
                                 file_name=args.input_file)
 
     #x, y = dataloader['labeled']
@@ -46,12 +46,12 @@ def main():
     #
     # trade-off parameter
     #alpha = 0.1*unlabeled_size/labeled_size
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.003, betas=(0.9, 0.999))
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.999))
     #m = unlabeled_size
     cuda = torch.cuda.is_available()
     if cuda:
         model = model.cuda()
-    epoch_bar = tqdm(range(100))
+    epoch_bar = tqdm(range(args.n_epochs))
 
     # for epoch in epoch_bar:
     #     model.train()
@@ -97,6 +97,7 @@ def main():
     #             accuracy = f1_score(test_y.cpu(), unlabel_t.cpu(), average='macro')
     #     epoch_bar.set_description("f1: {:.2f}, loss : {:.2f}\n".format(accuracy, total_loss))
 
+    beta = args.alpha*(args.train_num/(args.train_num-args.n_labeled))
 
     for epoch in epoch_bar:
         model.train()
@@ -127,7 +128,7 @@ def main():
             unlabel_t, unlabel_loss = model(batch_u)
             workers_bar = worker_y.mean(dim=0)
             clas_loss = torch.mean(torch.sum(F.binary_cross_entropy( label_t, workers_bar, reduction='none'), dim=1))
-            J_alpha = label_loss+unlabel_loss+clas_loss
+            J_alpha = label_loss+unlabel_loss+beta*clas_loss
 
             J_alpha.backward()
             optimizer.step()

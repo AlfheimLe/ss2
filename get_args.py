@@ -29,10 +29,12 @@ def process_args():
     parser.add_argument('--x_dim', type=int, default=103)
 
     # training params
-    parser.add_argument('--n_labeled', type=int, default=3000,
+    parser.add_argument('--n_labeled', type=int, default=400,
                         help='Number of labeled training examples in the dataset')
+    parser.add_argument('--train_num', type=int, default=1000,
+                        help='Number of training examples in the dataset')
     parser.add_argument('--batch_size', type=int, default=100)
-    parser.add_argument('--n_epochs', type=int, default=1, help='Number of epochs to train.')
+    parser.add_argument('--n_epochs', type=int, default=100, help='Number of epochs to train.')
     parser.add_argument('--lr', type=float, default=3e-4, help='Learning rate')
     parser.add_argument('--alpha', type=float, default=0.1,
                         help='Classifier loss multiplier controlling generative vs. discriminative learning.')
