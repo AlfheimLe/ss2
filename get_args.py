@@ -8,7 +8,7 @@ def process_args():
     parser.add_argument('--evaluate', action='store_true', help='Evaluate a model.')
     parser.add_argument('--generate', action='store_true', help='Generate samples from a model.')
     parser.add_argument('--vis_styles', action='store_true', help='Visualize styles manifold.')
-    parser.add_argument('--cuda', type=int, help='Which cuda device to use')
+    parser.add_argument('--cuda', default='1', help='Which cuda device to use')
     parser.add_argument('--seed', type=int, default=1, help='Random seed.')
 
     # file paths

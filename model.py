@@ -101,6 +101,7 @@ class Predict(nn.Module):
 class Encoder(nn.Module):
     def __init__(self, args):
         super(Encoder, self).__init__()
+        # [self.x_dim, self.h_dim, self.z_dim, self.len] = dims
         self.x_dim = args.x_dim
         self.h_dim = args.h_dim
         self.z_dim = args.z_dim
@@ -140,6 +141,7 @@ class Decoder_x(nn.Module):
     '''
     def __init__(self, args):
         super(Decoder_x, self).__init__()
+        #[self.z_dim, self.h_dim, self.x_dim, self.len] = dims
         self.z_dim = args.z_dim
         self.h_dim = args.h_dim
         self.len = args.y_dim

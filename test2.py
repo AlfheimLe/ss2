@@ -17,7 +17,7 @@ from tqdm import tqdm
 from sklearn.preprocessing import MinMaxScaler
 from data import get_dataloader
 #from models import DeepGenerativeModel
-
+import os
 def generate(y, y_dim, n):
     new_y = np.zeros([n, y_dim])
     for i in range(n):
@@ -34,6 +34,8 @@ def get_data(file_name):
 
 def main():
     args = process_args()
+
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.cuda
 
     dataloader = get_dataloader(num_training=args.train_num,num_labeled=args.n_labeled,
                                 batch_size=args.batch_size, y_dim=args.y_dim,
@@ -128,6 +130,7 @@ def main():
             unlabel_t, unlabel_loss = model(batch_u)
             workers_bar = worker_y.mean(dim=0)
             clas_loss = torch.mean(torch.sum(F.binary_cross_entropy( label_t, workers_bar, reduction='none'), dim=1))
+            # J_alpha = label_loss + unlabel_loss + clas_loss
             J_alpha = label_loss+unlabel_loss+beta*clas_loss
 
             J_alpha.backward()
@@ -144,7 +147,7 @@ def main():
                 test_y = test_y.cuda()
                 unlabel_t, unlabel_loss = model(test_x)
                 unlabel_t = (unlabel_t>0.5).float()
-                accuracy = f1_score(test_y.cpu(), unlabel_t.cpu(), average='macro')
+                accuracy = f1_score(test_y.cpu(), unlabel_t.cpu(), average='micro')
         epoch_bar.set_description("f1: {:.2f}, loss : {:.2f}\n".format(accuracy, total_loss))
 
 if __name__== '__main__':
